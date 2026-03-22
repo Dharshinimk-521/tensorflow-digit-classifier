@@ -34,7 +34,7 @@ def predict():
 
         img = img.resize((28, 28))
         img_array = np.array(img) / 255.0
-        img_array = img_array.reshape(1, 28, 28)
+        img_array = img_array.reshape(1, 28, 28, 1)
 
         prediction = model.predict(img_array)
         predicted_class = int(np.argmax(prediction))
