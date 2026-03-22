@@ -4,7 +4,7 @@ import tensorflow as tf
 from PIL import Image,ImageOps
 
 # Load model
-model = tf.keras.models.load_model("digit_classifier.keras")
+model = tf.keras.models.load_model("digit_classifier.h5")
 
 st.title("Handwritten Digit Classifier")
 #Create a file uploader in the web app to upload images (only png, jpg, jpeg)

@@ -52,5 +52,5 @@ for i in range(5):
     plt.axis('off')
 
 plt.show()
-model.save("digit_classifier.keras")
+model.save("digit_classifier.h5")
 
