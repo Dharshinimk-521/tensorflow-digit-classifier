@@ -8,12 +8,12 @@ x_train=x_train/255.0 #covert to 0-1 NN train better with small val
 x_test=x_test/255.0
 #model
 model = tf.keras.models.Sequential([
-    tf.keras.layers.Reshape((28,28,1), input_shape=(28,28)),
+    tf.keras.Input(shape=(28, 28, 1)),
     tf.keras.layers.Conv2D(32, (3,3), activation='relu'),
     tf.keras.layers.MaxPooling2D((2,2)),
     tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dense(10, activation='softmax')#softmax gives probability
+    tf.keras.layers.Dense(10, activation='softmax')
 ])
 #ReLU helps learn features
 
