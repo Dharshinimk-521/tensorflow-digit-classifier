@@ -1,32 +1,55 @@
-import streamlit as st
 import numpy as np
 import tensorflow as tf
-from PIL import Image,ImageOps
+from PIL import Image, ImageOps
+from flask import Flask, request, jsonify, send_from_directory
+import io
+import os
 
-# Load model
+app = Flask(__name__, static_folder='static', template_folder='.')
+
+# Load model once at startup
 model = tf.keras.models.load_model("digit_classifier.h5")
 
-st.title("Handwritten Digit Classifier")
-#Create a file uploader in the web app to upload images (only png, jpg, jpeg)
-uploaded_file = st.file_uploader("Upload a 28x28 digit image(any background or color)", type=["png","jpg","jpeg"])
-# Check if the user has uploaded a file
-if uploaded_file is not None:
-    # Open the uploaded image and convert it to grayscale ('L' mode)
-    img = Image.open(uploaded_file)
-    img = img.convert('L')
-    if np.mean(np.array(img)) > 127:  # simple heuristic: if background is bright
-        img = ImageOps.invert(img)
-    img = img.resize((28,28))
-    img_array = np.array(img) / 255.0
-    img_array = img_array.reshape(1,28,28)
-    #Reshape the array to match model input shape: (batch_size, height, width)
-    # Here batch_size is 1 since we are predicting a single image
-    prediction = model.predict(img_array)
-    # Get the index of the highest probability from the prediction
-    # This index corresponds to the predicted digit (0-9)
-    predicted_class = np.argmax(prediction)
+@app.route('/')
+def index():
+    return send_from_directory('.', 'index.html')
 
-    st.image(img, caption="Uploaded Image", width=300)
-    #Display the predicted digit
-    st.write("")
-    st.write("Prediction: ", predicted_class)
+@app.route('/predict', methods=['POST'])
+def predict():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file uploaded'}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'Empty filename'}), 400
+
+    try:
+        # Read and preprocess image — same logic as original app.py
+        img = Image.open(io.BytesIO(file.read()))
+        img = img.convert('L')
+
+        # Invert if background is bright (same heuristic as before)
+        if np.mean(np.array(img)) > 127:
+            img = ImageOps.invert(img)
+
+        img = img.resize((28, 28))
+        img_array = np.array(img) / 255.0
+        img_array = img_array.reshape(1, 28, 28)
+
+        prediction = model.predict(img_array)
+        predicted_class = int(np.argmax(prediction))
+        probabilities = prediction[0].tolist()
+        confidence = float(probabilities[predicted_class])
+
+        return jsonify({
+            'predicted_digit': predicted_class,
+            'confidence': confidence,
+            'probabilities': probabilities
+        })
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)

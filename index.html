@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digit Classifier</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+
+    <div class="grain"></div>
+
+    <header class="header">
+        <div class="header-inner">
+            <span class="logo">digit<span class="logo-accent">.</span>classify</span>
+            <span class="header-sub">CNN · MNIST · TensorFlow</span>
+        </div>
+    </header>
+
+    <main class="main">
+
+        <!-- LEFT: upload -->
+        <section class="card upload-card">
+            <div class="card-label">01 — INPUT</div>
+            <h2 class="card-title">Upload a digit</h2>
+            <p class="card-desc">Draw or photograph a handwritten digit (0–9). Works best with a clear, centred digit on any background.</p>
+
+            <div class="drop-zone" id="dropZone">
+                <div class="drop-inner" id="dropInner">
+                    <div class="drop-icon">
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M24 6v24M14 16l10-10 10 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M8 34v4a2 2 0 002 2h28a2 2 0 002-2v-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <p class="drop-text">Drop image here</p>
+                    <p class="drop-sub">or</p>
+                    <label class="browse-btn" for="fileInput">Browse file</label>
+                    <input type="file" id="fileInput" accept=".png,.jpg,.jpeg" hidden>
+                </div>
+                <div class="drop-preview hidden" id="dropPreview">
+                    <img id="previewImg" src="" alt="preview">
+                    <button class="clear-btn" id="clearBtn">✕ clear</button>
+                </div>
+            </div>
+
+            <button class="predict-btn" id="predictBtn" disabled>
+                <span id="btnText">Classify digit</span>
+                <span class="btn-arrow">→</span>
+            </button>
+        </section>
+
+        <!-- RIGHT: result -->
+        <section class="card result-card">
+            <div class="card-label">02 — OUTPUT</div>
+            <h2 class="card-title">Prediction</h2>
+
+            <div class="result-idle" id="resultIdle">
+                <p>Upload an image and hit <em>Classify digit</em> to see the result.</p>
+            </div>
+
+            <div class="result-loading hidden" id="resultLoading">
+                <div class="spinner"></div>
+                <p>Classifying…</p>
+            </div>
+
+            <div class="result-content hidden" id="resultContent">
+                <div class="result-digit" id="resultDigit">—</div>
+                <p class="result-caption">predicted digit</p>
+                <div class="confidence-wrap">
+                    <div class="confidence-label">
+                        <span>Confidence</span>
+                        <span id="confidenceVal">—</span>
+                    </div>
+                    <div class="confidence-bar-bg">
+                        <div class="confidence-bar" id="confidenceBar"></div>
+                    </div>
+                </div>
+                <div class="prob-grid" id="probGrid"></div>
+            </div>
+
+            <div class="result-error hidden" id="resultError">
+                <p id="errorMsg">Something went wrong.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        Trained on MNIST · 5 epochs · ~99% test accuracy
+    </footer>
+
+    <script src="static/script.js"></script>
+</body>
+</html>
