@@ -19,7 +19,7 @@ const errorMsg      = document.getElementById('errorMsg');
 
 let selectedFile = null;
 
-/* ── file select ── */
+/* ── file select via input ── */
 fileInput.addEventListener('change', e => {
     if (e.target.files[0]) loadFile(e.target.files[0]);
 });
@@ -36,10 +36,14 @@ dropZone.addEventListener('drop', e => {
     if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
 });
 
-/* ── click zone to open file dialog ── */
+/* ── click zone ONLY if no file loaded and not clicking the label/button ── */
 dropZone.addEventListener('click', e => {
-    if (e.target === clearBtn || e.target.closest('.clear-btn')) return;
-    if (selectedFile) return;
+    // don't trigger if clicking the label, clear btn, or if file already loaded
+    if (
+        selectedFile ||
+        e.target.closest('.browse-btn') ||
+        e.target.closest('.clear-btn')
+    ) return;
     fileInput.click();
 });
 
@@ -95,7 +99,6 @@ async function predict(file) {
         }
 
         const data = await res.json();
-        // data = { predicted_digit: 7, confidence: 0.983, probabilities: [0.001, ...] }
         showResult(data);
 
     } catch (err) {
@@ -115,14 +118,12 @@ function showResult(data) {
     resultDigit.textContent = digit;
     confidenceVal.textContent = (conf * 100).toFixed(1) + '%';
 
-    // animate bar after paint
     requestAnimationFrame(() => {
         setTimeout(() => {
             confidenceBar.style.width = (conf * 100) + '%';
         }, 50);
     });
 
-    // build prob grid
     probGrid.innerHTML = '';
     probs.forEach((p, i) => {
         const cell = document.createElement('div');
