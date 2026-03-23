@@ -65,3 +65,5 @@ new_model = tf.keras.models.Sequential([
 ])
 new_model.set_weights(model.get_weights())
 new_model.save("digit_classifier.h5")
+test_load = tf.keras.models.load_model("digit_classifier.h5")
+print("Model loaded successfully:", test_load.input_shape)
