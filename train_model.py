@@ -6,6 +6,8 @@ mnist=tf.keras.datasets.mnist
 (x_train,y_train),(x_test,y_test)=mnist.load_data()
 x_train=x_train/255.0 #covert to 0-1 NN train better with small val
 x_test=x_test/255.0
+x_train = x_train.reshape(-1, 28, 28, 1)
+x_test = x_test.reshape(-1, 28, 28, 1)
 #model
 model = tf.keras.models.Sequential([
     tf.keras.Input(shape=(28, 28, 1)),
@@ -13,7 +15,7 @@ model = tf.keras.models.Sequential([
     tf.keras.layers.MaxPooling2D((2,2)),
     tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dense(10, activation='softmax')
+    tf.keras.layers.Dense(10, activation='softmax')#softmax gives probability
 ])
 #ReLU helps learn features
 
@@ -47,10 +49,19 @@ plt.figure(figsize=(10,5))
 
 for i in range(5):
     plt.subplot(1,5,i+1)
-    plt.imshow(x_test[i], cmap='gray')
+    plt.imshow(x_test[i].reshape(28,28), cmap='gray')
     plt.title(np.argmax(predictions[i]))
     plt.axis('off')
 
 plt.show()
-model.save("digit_classifier.h5")
 
+# rebuild with old-style input_shape so Render's Keras can load it
+new_model = tf.keras.models.Sequential([
+    tf.keras.layers.Conv2D(32, (3,3), activation='relu', input_shape=(28,28,1)),
+    tf.keras.layers.MaxPooling2D((2,2)),
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dense(10, activation='softmax')
+])
+new_model.set_weights(model.get_weights())
+new_model.save("digit_classifier.h5")
